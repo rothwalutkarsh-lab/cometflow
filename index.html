@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CometFlow - Browser Automation SaaS</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+header { background: rgba(255,255,255,0.95); padding: 20px 30px; border-radius: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.logo { font-size: 24px; font-weight: bold; color: #667eea; }
+.user-info { display: flex; gap: 10px; align-items: center; }
+button { padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; }
+button:hover { background: #764ba2; }
+.nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.nav-tabs button { background: rgba(255,255,255,0.9); color: #667eea; border: 2px solid transparent; }
+.nav-tabs button.active { background: #667eea; color: white; border-color: #764ba2; }
+.content { background: rgba(255,255,255,0.95); border-radius: 10px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+.stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; }
+.stat-card h3 { font-size: 30px; margin: 10px 0; }
+.form-group { margin-bottom: 15px; }
+label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; font-size: 14px; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th { background: #667eea; color: white; padding: 12px; text-align: left; }
+td { padding: 12px; border-bottom: 1px solid #ddd; }
+.btn-small { padding: 5px 10px; font-size: 12px; }
+.success { color: #28a745; }
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<div class="logo">✨ CometFlow</div>
+<div class="user-info">
+<span id="userDisplay">Guest</span>
+<button onclick="loginWithGoogle()">Login</button>
+</div>
+</header>
+<div class="nav-tabs">
+<button class="nav-btn active" onclick="switchTab(event, 'dashboard')">Dashboard</button>
+<button class="nav-btn" onclick="switchTab(event, 'accounts')">Accounts</button>
+<button class="nav-btn" onclick="switchTab(event, 'automations')">Automations</button>
+<button class="nav-btn" onclick="switchTab(event, 'monitoring')">Monitoring</button>
+<button class="nav-btn" onclick="switchTab(event, 'logs')">Logs</button>
+</div>
+<div class="content">
+<div id="dashboard" class="tab-content active">
+<h2>Dashboard</h2>
+<div class="stats">
+<div class="stat-card"><h3 id="accCount">0</h3><p>Accounts</p></div>
+<div class="stat-card"><h3 id="taskCount">0</h3><p>Tasks</p></div>
+<div class="stat-card"><h3 id="monCount">0</h3><p>Monitors</p></div>
+<div class="stat-card"><h3 id="logCount">0</h3><p>Logs</p></div>
+</div>
+<h3>Recent Activity</h3>
+<div id="recentActivity"><p>No recent activity</p></div>
+</div>
+<div id="accounts" class="tab-content">
+<h2>Multi-Account Management</h2>
+<div class="form-group"><label>Account Name:</label><input id="accName" type="text" placeholder="e.g., LinkedIn Account 1"></div>
+<div class="form-group"><label>Platform:</label><select id="accPlatform"><option>LINKEDIN</option><option>TWITTER</option><option>INSTAGRAM</option><option>CUSTOM</option></select></div>
+<button onclick="addAccount()">+ Add Account</button>
+<h3 style="margin-top: 30px;">Your Accounts</h3>
+<div id="accountsList"></div>
+</div>
+<div id="automations" class="tab-content">
+<h2>Social Media Automation</h2>
+<div class="form-group"><label>Task Name:</label><input id="taskName" type="text" placeholder="Task name"></div>
+<div class="form-group"><label>Task Type:</label><select id="taskType"><option>SOCIAL_POST</option><option>SOCIAL_ACTION</option><option>WEB_MONITOR</option></select></div>
+<div class="form-group"><label>Configuration (JSON):</label><textarea id="taskConfig" placeholder='{"message":"Hello world"}' rows="5"></textarea></div>
+<div class="form-group"><label>Schedule:</label><select id="taskSchedule"><option>IMMEDIATE</option><option>EVERY_6_HOURS</option><option>DAILY</option></select></div>
+<button onclick="addTask()">+ Create Task</button>
+<h3 style="margin-top: 30px;">Active Tasks</h3>
+<div id="tasksList"></div>
+</div>
+<div id="monitoring" class="tab-content">
+<h2>Web Monitoring</h2>
+<div class="form-group"><label>URL to Monitor:</label><input id="monUrl" type="url" placeholder="https://example.com"></div>
+<div class="form-group"><label>Monitor Type:</label><select id="monType"><option>CONTENT_CHANGE</option><option>PRICE_CHANGE</option><option>NEW_ITEM</option></select></div>
+<div class="form-group"><label>CSS Selector:</label><input id="monSelector" type="text" placeholder=".price (optional)"></div>
+<button onclick="addMonitor()">+ Add Monitor</button>
+<h3 style="margin-top: 30px;">Active Monitors</h3>
+<div id="monitorsList"></div>
+</div>
+<div id="logs" class="tab-content">
+<h2>Execution Logs</h2>
+<div id="logsList"></div>
+</div>
+</div>
+</div>
+<script>
+let userData = { loggedIn: false, name: '', accountsList: [], tasksList: [], monitorsList: [], logsList: [] };
+function switchTab(event, tabName) { document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(tabName).classList.add('active'); event.target.classList.add('active'); updateDashboard(); }
+function loginWithGoogle() { if (!userData.loggedIn) { userData.loggedIn = true; userData.name = 'User ' + Math.random().toString(36).substr(2, 9); document.getElementById('userDisplay').textContent = userData.name; alert('Logged in as ' + userData.name + ' (Demo Mode)'); updateStats(); } else { userData.loggedIn = false; userData.name = ''; document.getElementById('userDisplay').textContent = 'Guest'; alert('Logged out'); } }
+function addAccount() { if (!userData.loggedIn) { alert('Please login first'); return; } const name = document.getElementById('accName').value; const platform = document.getElementById('accPlatform').value; if (!name) { alert('Please enter account name'); return; } const account = { id: Date.now(), name: name, platform: platform, created: new Date().toLocaleString() }; userData.accountsList.push(account); document.getElementById('accName').value = ''; renderAccountsList(); updateStats(); alert('Account added successfully!'); }
+function renderAccountsList() { const list = document.getElementById('accountsList'); if (userData.accountsList.length === 0) { list.innerHTML = '<p>No accounts added yet</p>'; return; } let html = '<table><th>Name</th><th>Platform</th><th>Created</th><th>Action</th>'; userData.accountsList.forEach(acc => { html += `<tr><td>${acc.name}</td><td>${acc.platform}</td><td>${acc.created}</td><td><button class="btn-small" onclick="deleteAccount(${acc.id})">Delete</button></td></tr>`; }); html += '</table>'; list.innerHTML = html; }
+function deleteAccount(id) { userData.accountsList = userData.accountsList.filter(a => a.id !== id); renderAccountsList(); updateStats(); }
+function addTask() { if (!userData.loggedIn) { alert('Please login first'); return; } const name = document.getElementById('taskName').value; const type = document.getElementById('taskType').value; const config = document.getElementById('taskConfig').value; const schedule = document.getElementById('taskSchedule').value; if (!name || !config) { alert('Please fill all fields'); return; } try { JSON.parse(config); } catch { alert('Invalid JSON in configuration'); return; } const task = { id: Date.now(), name: name, type: type, config: config, schedule: schedule, created: new Date().toLocaleString(), status: 'ACTIVE' }; userData.tasksList.push(task); document.getElementById('taskName').value = ''; document.getElementById('taskConfig').value = ''; renderTasksList(); updateStats(); const log = { taskId: task.id, message: `Task '${name}' created`, status: 'SUCCESS', timestamp: new Date().toLocaleString() }; userData.logsList.push(log); alert('Task created successfully!'); }
+function renderTasksList() { const list = document.getElementById('tasksList'); if (userData.tasksList.length === 0) { list.innerHTML = '<p>No tasks created yet</p>'; return; } let html = '<table><th>Name</th><th>Type</th><th>Schedule</th><th>Status</th><th>Created</th><th>Action</th>'; userData.tasksList.forEach(task => { html += `<tr><td>${task.name}</td><td>${task.type}</td><td>${task.schedule}</td><td><span class="success">${task.status}</span></td><td>${task.created}</td><td><button class="btn-small" onclick="deleteTask(${task.id})">Delete</button></td></tr>`; }); html += '</table>'; list.innerHTML = html; }
+function deleteTask(id) { userData.tasksList = userData.tasksList.filter(t => t.id !== id); renderTasksList(); updateStats(); }
+function addMonitor() { if (!userData.loggedIn) { alert('Please login first'); return; } const url = document.getElementById('monUrl').value; const type = document.getElementById('monType').value; const selector = document.getElementById('monSelector').value; if (!url) { alert('Please enter URL'); return; } const monitor = { id: Date.now(), url: url, type: type, selector: selector, created: new Date().toLocaleString(), status: 'ACTIVE' }; userData.monitorsList.push(monitor); document.getElementById('monUrl').value = ''; document.getElementById('monSelector').value = ''; renderMonitorsList(); updateStats(); alert('Monitor added successfully!'); }
+function renderMonitorsList() { const list = document.getElementById('monitorsList'); if (userData.monitorsList.length === 0) { list.innerHTML = '<p>No monitors added yet</p>'; return; } let html = '<table><th>URL</th><th>Type</th><th>Selector</th><th>Status</th><th>Created</th><th>Action</th>'; userData.monitorsList.forEach(mon => { html += `<tr><td style="max-width:300px;word-break:break-all;">${mon.url}</td><td>${mon.type}</td><td>${mon.selector || '-'}</td><td><span class="success">${mon.status}</span></td><td>${mon.created}</td><td><button class="btn-small" onclick="deleteMonitor(${mon.id})">Delete</button></td></tr>`; }); html += '</table>'; list.innerHTML = html; }
+function deleteMonitor(id) { userData.monitorsList = userData.monitorsList.filter(m => m.id !== id); renderMonitorsList(); updateStats(); }
+function updateStats() { document.getElementById('accCount').textContent = userData.accountsList.length; document.getElementById('taskCount').textContent = userData.tasksList.length; document.getElementById('monCount').textContent = userData.monitorsList.length; document.getElementById('logCount').textContent = userData.logsList.length; }
+function updateDashboard() { let recentHTML = ''; if (userData.logsList.length === 0) { recentHTML = '<p>No activity yet</p>'; } else { recentHTML = '<table><th>Message</th><th>Status</th><th>Timestamp</th>'; userData.logsList.slice(-5).reverse().forEach(log => { recentHTML += `<tr><td>${log.message}</td><td><span class="${log.status === 'SUCCESS' ? 'success' : 'error'}">${log.status}</span></td><td>${log.timestamp}</td></tr>`; }); recentHTML += '</table>'; } document.getElementById('recentActivity').innerHTML = recentHTML; updateStats(); } window.addEventListener('load', function() { renderAccountsList(); renderTasksList(); renderMonitorsList(); updateDashboard(); });
+</script>
+</body>
+</html>
