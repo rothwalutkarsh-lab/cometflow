@@ -441,8 +441,15 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-// 1) PASTE YOUR FIREBASE CONFIG HERE
-// const firebaseConfig = { ... };
+// 1) FIREBASE CONFIG – replace values with your real config from Firebase Console
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
